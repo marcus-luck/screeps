@@ -10,11 +10,6 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder')
     var distharvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'distharvester')
 
-    // console.log('Harvesters: ' + harvesters.length + "\n" +
-    //     'Upgraders: ' + upgraders.length + "\n" +
-    //     'Builders: ' + builders.length + "\n" +
-    //     'DistHarvester: ' + distharvesters.length);
-
     for(var name in Memory.creeps) {
         if(!Game.creeps[name]) {
             delete Memory.creeps[name];
