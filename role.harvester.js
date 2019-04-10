@@ -31,7 +31,7 @@ var roleHarvester = {
             if(targets.length > 0) {
                 for(var target in targets) {
                     var t = targets[target]
-                    console.log("Target: " + t)
+                    // console.log("Target: " + t)
                     if(creep.transfer(t, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(t) //, {visualizePathStyle: {stroke: '#ffffff'}});
                     }

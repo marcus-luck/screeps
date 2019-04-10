@@ -27,7 +27,7 @@ var roleBuilder = {
             if(targets.length) {
                 for(var target in targets) {
                     var t = targets[target]
-                    console.log("Target: " + t)
+                    // console.log("Target: " + t)
                     if(creep.build(t) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(t) //, {visualizePathStyle: {stroke: '#ffffff'}});
                     }
