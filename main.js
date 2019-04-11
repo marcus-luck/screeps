@@ -17,7 +17,7 @@ module.exports.loop = function () {
         }
     }
 
-    if(Game.spawns['Spawn1'].energy >= 200 && harvesters.length < 6) {
+    if(Game.spawns['Spawn1'].energy && harvesters.length < 6) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
@@ -30,14 +30,14 @@ module.exports.loop = function () {
     //         {memory: {role: 'distharvester'}});
     // }
 
-    if(Game.spawns['Spawn1'].energy >= 300 && upgraders.length < 6) {
+    if(Game.spawns['Spawn1'].energy && upgraders.length < 6) {
         var newName = 'Upgrader' + Game.time;
         console.log('Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
             {memory: {role: 'upgrader', working: false, targetId: null, sourceId: null}});        
     }
  
-    if(Game.spawns['Spawn1'].energy >= 300 && builders.length < 4) {
+    if(Game.spawns['Spawn1'].energy && builders.length < 4) {
         var newName = 'Builder' + Game.time;
         console.log('Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
