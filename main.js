@@ -69,15 +69,41 @@ module.exports.loop = function () {
         // }
     }
 
+    // Build roads if needed.
+    if (Game.time % 20 == 0){
+        console.log("Bygga väg!")
+        var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
+        sources.push(Game.spawns['Spawn1'].room.find(FIND_STRUCTURES));
+        for (var j = 0; j < sources.length; j++)
+        {
+            var roadTo = Game.spawns['Spawn1'].pos.findPathTo(sources[j].pos);
+            for (var i = 0; i < roadTo.length-1; i++)
+            {
+                Game.spawns['Spawn1'].room.createConstructionSite(roadTo[i].x,roadTo[i].y, STRUCTURE_ROAD);
+            }
+        }
+    }
 
-    var showpopulations = 'yes'
+
+    // sources.append(Game.spawns['Spawn1'].room.find(FIND_STRUCTURES));
+    // for (var j = 0; j < sources.length; j++)
+    // {
+    //     var roadTo = Game.spawns['Spawn1'].pos.findPathTo(sources[j].pos);
+    //     for (var i = 0; i < roadTo.length; i++)
+    //     {
+    //         Game.spawns['Spawn1'].room.createConstructionSite(roadTo[i].x,roadTo[i].y, STRUCTURE_ROAD);
+    //     }
+    // }
+
+
+    var showpopulations = false
     // population calculation
     var pop = Object.keys(Game.creeps).length;
     var harvesterpop = _.sum(Game.creeps, (c) => c.memory.role == 'harvester');
     var builderpop = _.sum(Game.creeps, (c) => c.memory.role == 'builder');
     var upgraderpop = _.sum(Game.creeps, (c) => c.memory.role == 'upgrader');
     var dhpop = _.sum(Game.creeps, (c) => c.memory.role == 'distharvester');
-    if (showpopulations == 'yes'){
+    if (showpopulations){
         console.log("H: " + harvesterpop + ' B: ' + builderpop + ' U: ' + upgraderpop + ' DH: ' + dhpop + ' Tot: ' + pop);
     }
 }
