@@ -32,6 +32,10 @@ var roleHarvester = {
                 if(targets.length > 0) {
                     creep.memory.targetId = targets[0].id;
                 }
+                else{
+                    creep.memory.targetId = Game.flags['idlers'].id;
+                }
+
             }
             else{
                 var t = Game.getObjectById(creep.memory.targetId);
