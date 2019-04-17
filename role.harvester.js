@@ -1,3 +1,4 @@
+var roleUpgrader = require('role.upgrader');
 var roleHarvester = {
 
     /** @param {Creep} creep **/
@@ -33,7 +34,8 @@ var roleHarvester = {
                     creep.memory.targetId = targets[0].id;
                 }
                 else{
-                    creep.memory.targetId = Game.flags['idlers'].id;
+                    creep.say("Lånedjur")
+                    roleUpgrader.run(creep);
                 }
 
             }

@@ -1,3 +1,4 @@
+var roleUpgrader = require('role.upgrader');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
@@ -17,6 +18,10 @@ var roleBuilder = {
                 var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
                 if(targets.length > 0) {
                     creep.memory.targetId = targets[0].id;
+                }
+                else{
+                    creep.say('🚧 Skit');
+                    roleUpgrader.run(creep); // If no more buildings, behave like an upgrader
                 }
             }
             else{
