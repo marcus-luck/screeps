@@ -2,13 +2,23 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleRepair = require('role.repair');
+var roomControl = require('room.control');
+var towerControl = require('tower.control');
 // var roleDistHarvester = require('role.distharvest');
 
 module.exports.loop = function () {
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester')
-    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader')
-    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder')
+    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+    var repairs = _.filter(Game.creeps, (creep) => creep.memory.role == 'repair');
+    var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
+
     // var distharvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'distharvester')
+
+    for(var tower in towers) {
+        towerControl.run(towers[tower])
+    }
 
     for(var name in Memory.creeps) {
         if(!Game.creeps[name]) {
@@ -17,42 +27,11 @@ module.exports.loop = function () {
         }
     }
 
-    if(Game.spawns['Spawn1'].energy && harvesters.length < 6) {
-        var newName = 'Harvester' + Game.time;
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
-            {memory: {role: 'harvester', working: false, targetId: null, sourceId: null}});        
-    }
-    // if(Game.spawns.Spawn1.energy >= 300 && distharvesters.length < 4) {
-    //     var newName = 'DistHarvester' + Game.time;
-    //     console.log('Spawning new DistHarvester: ' + newName);
-    //     Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
-    //         {memory: {role: 'distharvester'}});
-    // }
-
-    if(Game.spawns['Spawn1'].energy && upgraders.length < 6) {
-        var newName = 'Upgrader' + Game.time;
-        console.log('Spawning new upgrader: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
-            {memory: {role: 'upgrader', working: false, targetId: null, sourceId: null}});        
-    }
- 
-    if(Game.spawns['Spawn1'].energy && builders.length < 4) {
-        var newName = 'Builder' + Game.time;
-        console.log('Spawning new builder: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE], newName, 
-            {memory: {role: 'builder', working: false, targetId: null, sourceId: null}});        
-    }
-
-    if(Game.spawns['Spawn1'].spawning) { 
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-        Game.spawns['Spawn1'].room.visual.text(
-            '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn1'].pos.x + 1, 
-            Game.spawns['Spawn1'].pos.y, 
-            {align: 'left', opacity: 0.8});
-    }
+    // Check pop and build new
+    var myRooms = _.filter(Game.rooms, (r) => {return (r.name == 'W7N3' || r.name == 'W8N3')}); //.find(FIND_SOURCES);
+    roomControl.run(myRooms[0]);
     
+    // Run all creeps!
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
         if(creep.memory.role == 'harvester') {
@@ -64,47 +43,20 @@ module.exports.loop = function () {
         if(creep.memory.role == 'builder') {
             roleBuilder.run(creep);
         }
-        // if(creep.memory.role == 'distharvester') {
-        //     roleDistHarvester.run(creep);
-        // }
-    }
-
-    // Build roads if needed.
-    if (Game.time % 20 == 0){
-        console.log("Bygga väg!")
-        var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
-        sources.push(Game.spawns['Spawn1'].room.find(FIND_STRUCTURES));
-        for (var j = 0; j < sources.length; j++)
-        {
-            var roadTo = Game.spawns['Spawn1'].pos.findPathTo(sources[j].pos);
-            for (var i = 0; i < roadTo.length-1; i++)
-            {
-                Game.spawns['Spawn1'].room.createConstructionSite(roadTo[i].x,roadTo[i].y, STRUCTURE_ROAD);
-            }
+        if(creep.memory.role == 'repair') {
+            roleRepair.run(creep);
         }
     }
 
-
-    // sources.append(Game.spawns['Spawn1'].room.find(FIND_STRUCTURES));
-    // for (var j = 0; j < sources.length; j++)
-    // {
-    //     var roadTo = Game.spawns['Spawn1'].pos.findPathTo(sources[j].pos);
-    //     for (var i = 0; i < roadTo.length; i++)
-    //     {
-    //         Game.spawns['Spawn1'].room.createConstructionSite(roadTo[i].x,roadTo[i].y, STRUCTURE_ROAD);
-    //     }
-    // }
-
-
-    var showpopulations = false
+    var showpopulations = true;
     // population calculation
     var pop = Object.keys(Game.creeps).length;
     var harvesterpop = _.sum(Game.creeps, (c) => c.memory.role == 'harvester');
     var builderpop = _.sum(Game.creeps, (c) => c.memory.role == 'builder');
     var upgraderpop = _.sum(Game.creeps, (c) => c.memory.role == 'upgrader');
-    var dhpop = _.sum(Game.creeps, (c) => c.memory.role == 'distharvester');
+    var rpop = _.sum(Game.creeps, (c) => c.memory.role == 'repair');
     if (showpopulations){
-        console.log("H: " + harvesterpop + ' B: ' + builderpop + ' U: ' + upgraderpop + ' DH: ' + dhpop + ' Tot: ' + pop);
+        console.log("H: " + harvesterpop + ' B: ' + builderpop + ' U: ' + upgraderpop + ' R: ' + rpop + ' Tot: ' + pop);
     }
 }
 
